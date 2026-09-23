@@ -1,80 +1,96 @@
-# Framework IA — EIF420O (UNA)
+# 🤖 Framework AgentesIA — Sistema Multiagente para Machine Learning
 
-Framework Streamlit que unifica los 4 casos de estudio en una sola app multipágina:
+Sistema Multiagente (MAS) desarrollado en **Python + Streamlit** para el curso de Inteligencia Artificial (EIF-420O, UNA). Un **Agente Coordinador** orquesta cuatro agentes especializados —EDA, Clustering, Clasificación y Regresión— que analizan datasets, entrenan modelos, comparan algoritmos mediante benchmarking automático y presentan resultados en un dashboard interactivo.
 
-| Página | Caso de Estudio | Contenido |
-|---|---|---|
-| `pages/1_EC1_No_Supervisado.py` | EC1 | ACP, HAC, KMeans/KMedoids |
-| `pages/2_EC2_Clasificacion.py`  | EC2 | KNN, Árbol DT, Random Forest, XGBoost, ADABoost |
-| `pages/3_EC3_Regresion.py`      | EC3 | Lineal, Lasso, Ridge, SVR, Árbol, RF, Gradient Boosting |
-| `pages/4_EC4_IA.py`             | EC4 | Sistema Multiagente integrado (EDA, Clustering, Clasificación, Regresión, Dashboard) |
+## 🏗️ Arquitectura del sistema
 
-EC4 es **autónomo**: reimplementa todo con `scikit-learn` directamente y no depende de los
-módulos `PaqNOSup.py`, `GuiaClaseSupervisada.py`, `M_Caso.py` ni `CVisualizer.py`. Solo necesita
-el dataset `diabetes_V2.csv`.
-
-EC1, EC2 y EC3 sí dependen de los módulos de tus carpetas originales. Esos archivos no se
-incluyen aquí porque solo viste sus nombres en capturas de pantalla; debes copiarlos tú mismo
-(ver paso 2).
-
-## 1. Descomprime el proyecto
-
-Descomprime `framework_ia.zip` donde quieras, por ejemplo en
-`Documentos/Universidad/Inteligencia Artificial/framework_ia/`.
-
-## 2. Copia los módulos y los datasets que ya tienes
-
-Desde tus carpetas originales (`Caso de Estudio 1`, `2`, `3`), copia estos archivos:
-
-**A `modules/`:**
-- `PaqNOSup.py` ← desde **Caso de Estudio 1**
-- `GuiaClaseSupervisada.py` ← desde **Caso de Estudio 2**
-- `M_Caso.py` ← desde **Caso de Estudio 3**
-- `CVisualizer.py` ← desde **Caso de Estudio 3**
-
-**A `data/`:**
-- `hotel_bookings_muestra.csv` ← desde **Caso de Estudio 1**
-- `BankChurners.csv` ← desde **Caso de Estudio 1**
-- `potabilidad_V2.csv` ← desde **Caso de Estudio 2**
-- `diabetes_V2.csv` ← desde **Caso de Estudio 2** (o **Caso de Estudio 4**, es el mismo archivo)
-- `Toyota_Price.csv` ← desde **Caso de Estudio 3**
-- `kc_house_data.csv` ← desde **Caso de Estudio 3**
-
-No necesitas copiar `ModuloACP.py`, `No_Supervisados.py`, `Ec3_main.py` ni `prueba.py`: por lo que
-se ve en las capturas, son versiones previas/sueltas que ya no usan las páginas finales.
-
-## 3. Instala dependencias
-
-Desde la carpeta `framework_ia/`, con un entorno virtual activado (recomendado):
-
-```bash
-pip install -r requirements.txt
+```
+                        Usuario
+                           │
+                           ▼
+              ┌─────────────────────────┐
+              │  Agente Coordinador MAS  │
+              └─────────────────────────┘
+                 │       │       │      │
+                 ▼       ▼       ▼      ▼
+               EDA   Clustering  Clasif  Regres
+                 \      │        │      /
+                  \     │        │     /
+                   ▼    ▼        ▼    ▼
+                  Dashboard Streamlit
 ```
 
-Si al ejecutar EC1, EC2 o EC3 ves un `ModuleNotFoundError` (por ejemplo `xgboost` o
-`scikit-learn-extra`), es porque tus módulos originales importan algo que no está en
-`requirements.txt` (no pude ver su código fuente, solo el listado de carpetas). Instálalo con
-`pip install <paquete>` y vuelve a intentar. Si me compartes esos 4 archivos `.py`, te dejo el
-`requirements.txt` exacto.
+### Agente Coordinador
+Cerebro del sistema: carga y valida los datasets, activa y coordina a los demás agentes, consolida métricas, compara modelos entre sí y genera el reporte final con recomendaciones automáticas.
 
-## 4. Ejecuta el framework
+### Agente EDA (Análisis Exploratorio)
+- Calidad de datos: nulos, duplicados, inconsistencias.
+- Estadística descriptiva: media, mediana, moda, varianza, desviación estándar.
+- Correlación (Pearson, Spearman) y heatmaps.
+- Detección de outliers (IQR, Z-Score).
+- Visualización: histogramas, boxplots, scatterplots, pairplots.
+
+### Agente No Supervisado — Clustering
+- **K-Means** (número óptimo de clusters, método del codo).
+- **Clustering Jerárquico** (dendrogramas).
+- **DBSCAN** (regiones densas, detección de ruido).
+- Métricas: Silhouette Score, Davies-Bouldin Index, Calinski-Harabasz Index.
+
+### Agente Supervisado — Clasificación
+- Algoritmos: KNN, Decision Tree, Random Forest, AdaBoost, XGBoost, Naive Bayes, Logistic Regression, SVM.
+- Métricas: Accuracy, Precision, Recall, F1, ROC-AUC, matriz de confusión.
+- Benchmarking dentro de la misma familia (p. ej. Árbol vs. Random Forest) y entre familias distintas (p. ej. Random Forest vs. SVM).
+
+### Agente Supervisado — Regresión
+- Algoritmos: Linear Regression, Ridge/RidgeCV, Lasso/LassoCV, SVR, Decision Tree Regressor, Random Forest Regressor, XGBoost Regressor.
+- Métricas: MAE, MSE, RMSE, R², MAPE.
+- Benchmarking entre modelos lineales, basados en árboles y de boosting.
+
+## 📊 Dashboard (Streamlit)
+
+| Página | Contenido |
+|---|---|
+| 1. Inicio | Proyecto, integrantes, objetivos |
+| 2. Carga de Datos | Subida y visualización del CSV |
+| 3. EDA | Estadísticas, correlaciones, histogramas, nulos |
+| 4. Clustering | Método del codo, Silhouette Score, clusters |
+| 5. Clasificación | Accuracy, Precision, Recall, F1, AUC |
+| 6. Regresión | MAE, RMSE, R² |
+| 7. Dashboard Ejecutivo | Mejor algoritmo, comparación general, recomendaciones |
+
+## 🗂️ Estructura del proyecto
+
+```
+framework_ia/
+├── Inicio.py                       # Punto de entrada (streamlit run Inicio.py)
+├── pages/
+│   ├── 1_EC1_No_Supervisado.py
+│   ├── 2_EC2_Clasificacion.py
+│   ├── 3_EC3_Regresion.py
+│   └── 4_EC4_IA.py                 # Sistema Multiagente integrado
+├── modules/                        # Lógica de los agentes especializados
+├── data/                           # Datasets de ejemplo (diabetes, potabilidad, etc.)
+├── utils/
+│   └── helpers.py
+└── requirements.txt
+```
+
+## ▶️ Instalación y ejecución
 
 ```bash
+git clone https://github.com/MinorCL/Framework_AgentesIA.git
+cd Framework_AgentesIA/framework_ia
+pip install -r requirements.txt
 streamlit run Inicio.py
 ```
 
-Esto abre la página de inicio con las 4 tarjetas de los casos de estudio. Navega entre ellos
-con el menú de la izquierda. **No** ejecutes `streamlit run pages/1_EC1...py` directamente: el
-punto de entrada siempre es `Inicio.py`.
+> El sistema multiagente integrado (EC4) es autónomo: solo necesita el dataset `diabetes_V2.csv` incluido en `data/`.
 
-## 5. Notas por caso de estudio
+## 🎓 Contexto académico
 
-- **EC1**: si activas HAC con un dataset grande, se toma automáticamente una muestra de 500 filas
-  para que no se cuelgue.
-- **EC2**: el target de "Diabetes" está mapeado a la columna `class`; revisa que tu CSV use ese
-  nombre o ajústalo en `TARGET_MAP` dentro de `pages/2_EC2_Clasificacion.py`.
-- **EC3**: requiere `M_Caso.py` con una clase `Regresion` (o `Ec3_main.py` con la misma clase
-  como alternativa). Si el botón de ejecución aparece deshabilitado, es porque ese módulo no se
-  encontró en `modules/`.
-- **EC4**: en la pestaña "Carga de Datos" hay un botón para usar `diabetes_V2.csv` directamente
-  desde `data/`, sin necesidad de subirlo manualmente.
+Proyecto para el curso **EIF-420O — Inteligencia Artificial**, Universidad Nacional de Costa Rica (UNA), I Ciclo 2026. Basado en los fundamentos de Sistemas Multiagente (MAS) y Agentic AI aplicados a la automatización del ciclo completo de análisis de datos y Machine Learning.
+
+## 👥 Integrantes
+
+- Gabriel Jesús Bello Escalona
+- Minor Castillo Loria
